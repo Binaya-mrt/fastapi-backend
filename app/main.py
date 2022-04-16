@@ -6,7 +6,7 @@ from psycopg2.extras import RealDictCursor
 import time
 from sqlalchemy.orm import Session
 from .database import engine,get_db
-from . import models,schemas
+from . import models,schemas,utils
 from typing import List  
 
 
@@ -80,3 +80,23 @@ def update_post(id:int, updated_post:schemas.PostCreate,db:Session=Depends(get_d
     post_query.update(updated_post.dict(),synchronize_session=False)
     db.commit() 
     return post_query.first()
+
+# @app.post("/users",status_code=status.HTTP_201_CREATED)    
+# def create_user(user: schemas.UserCreate, db:Session=Depends(get_db)):
+#     # user=models.User(name="Test",email="
+#     new_user= models.User(**user.dict())
+#     db.add(new_user)
+#     db.commit()
+#     db.refresh(new_user)
+#     return new_user  
+@app.post("/users",status_code=status.HTTP_201_CREATED,response_model=schemas.UserOut)
+def create_user(user:schemas.UserCreate,db:Session=Depends(get_db)):
+    hashed_password=utils.hash(user.password)
+    user.password=hashed_password
+    new_user= models.User(**user.dict())
+    if new_user.email in (user.email for user in db.query(models.User).all()):
+        raise HTTPException(status_code=400, detail="Email already registered")
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user 
