@@ -8,7 +8,7 @@ from .. import database, models, schemas, oath2
 router = APIRouter(tags=["authentication"])
 
 
-@router.post('/login')
+@router.post('/login',)
 def login(user_credentails: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
 
     user = db.query(models.User).filter(
