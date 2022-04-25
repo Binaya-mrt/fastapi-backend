@@ -45,5 +45,5 @@ class Token(BaseModel):
     token_type: str
 
 
-class TokenDara(BaseModel):
+class TokenData(BaseModel):
     id: Optional[str] = None
