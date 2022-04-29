@@ -12,6 +12,11 @@ router = APIRouter(
     tags=["Posts"]
 )
 
+# pagination is needed to limit the no. of posts returned
+# it is set passing a limit parameter in the url and function
+# if a first page sends 20 result then second page must skip 20 result.
+# it is done by passing a skip parameter in the url and function
+
 
 @router.get("/", response_model=List[schemas.Post])
 def get_posts(db: Session = Depends(get_db)):
